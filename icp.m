@@ -17,11 +17,8 @@ function [R, t] = icp(source, target, sample_technique)
     fprintf("Performing ICP...\n")
     
     for i =1:15
-        if sample_technique == "sample"
-            new_source = R * source  + mean(t, 2);
-        else
-            new_source = R * source  + t;
-        end
+        
+        new_source = R * source  + t;
         
         if sample_technique == "sample"
             sample = randperm(size(new_source,2), 2000);
@@ -35,11 +32,9 @@ function [R, t] = icp(source, target, sample_technique)
         
         % Refine R and t using SVD
         [R_step, t_step] = refine_R_t(new_source, target_corr, distances, sample_technique) ;
-        
         % Update
         R = R_step * R;
         t = t + t_step;
-         
         % Calculate RMS to determine convergence
         RMS = calculate_RMS(new_source, target_corr) ;
         
@@ -158,17 +153,15 @@ function [R, t] = refine_R_t(source, target, distances, sample)
     end
     
     % Calculate optimal t vector
-    t = target_c - R * source_c ;
-    
-    % Check dimensions
-    if not(isequal(size(t), [D, N]))
-        disp("Translation vector does not have the correct dimensions: ")
-        disp(size(t))
-    end
+    t = wc_target - R * wc_source ;
 end
 
 function RMS = calculate_RMS(source, target_corr)
-    
     % Calculate RMS
-    RMS = sqrt(mean(sum((source - target_corr).^2, 2))); 
+    dif = source - target_corr;
+    sum_of_dif = 0;
+    for i=1:length(dif)
+        sum_of_dif = sum_of_dif + norm(dif(:, i))^.2;
+    end
+    RMS = sqrt(sum_of_dif/length(dif)); 
 end
