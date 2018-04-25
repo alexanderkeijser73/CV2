@@ -1,4 +1,4 @@
-function [h] = fscatter3(X,Y,Z,C,cmap, color);
+function [h] = fscatter39(X,Y,Z,C,cmap);
 % [h] = fscatter3(X,Y,Z,C,cmap);
 % Plots point cloud data in cmap color classes and 3 Dimensions,
 % much faster and very little memory usage compared to scatter3 !
@@ -76,7 +76,7 @@ for j = 1:numclass
   jj = (ii(:)== j);
   if ~isempty(jj)
     k = k + 1;
-    h = plot3(X(jj),Y(jj),Z(jj),'.','color',color,'markersize',siz);
+    h = plot3(X(jj),Y(jj),Z(jj),'.','color',col(j,:),'markersize',siz);
     if ~isempty(h)
       o = o+1;
         hp(o) = h;
@@ -86,4 +86,5 @@ end
 caxis([min(C) max(C)])
 axis equal;rotate3d on;view(3);
 box on
+hcb = colorbar('location','east');
 
